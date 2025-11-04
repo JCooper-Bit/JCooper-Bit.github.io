@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="en" style="--bs-body-bg: #0EB16;--bs-primary: #A239CA;--bs-primary-rgb: 162,57,202;--bs-secondary: #4317F6;--bs-secondary-rgb: 67,23,246;--bs-body-color: #e7dfdd;">
+<html data-bs-theme="light" lang="en" style="--bs-body-bg: #0EB16;--bs-primary: #A239CA;--bs-primary-rgb: 162,57,202;--bs-secondary: #4317F6;--bs-secondary-rgb: 67,23,246;--bs-body-color: #e7dfdd;color: rgb(255,255,255);">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>My site</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/bss-overrides.css">
-    <link rel="stylesheet" href="assets/css/Navbar-Right-Links-Dark-icons.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <title>Lars Intro - Make your own Linear Algebra Library</title>
+    <meta name="description" content="Make your own LA library
+
+">
+    <meta property="og:image" content="../assets/img/lars2.png">
+    <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/bss-overrides.css">
+    <link rel="stylesheet" href="../assets/css/Navbar-Right-Links-Dark-icons.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 
 <body>
@@ -20,31 +24,48 @@
                     <li class="nav-item"><a class="nav-link" href="/projects">Projects</a></li>
                     <li class="nav-item"><a class="nav-link" href="/articles">Articles</a></li>
                 </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="/about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                </ul>
                 <p class="navbar-text"><br>&nbsp;</p>
             </div>
         </div>
     </nav>
-    <div data-bss-type="blog-loop">
-        <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-lg-3 mt-0" data-bss-type="blog-loop-base">
-            <div class="col" data-bss-type="blog-loop-item" style="border-width: 5px;border-color: #212529fa;">
-                <div class="card" style="border-width: 2px;border-color: rgb(0,0,0);"><a style="background: #212529fa;border-color: #212529fa;" href="posts/lars-2.html"><img class="card-img-top" style="width: 25%;height: 25%;" src="assets/img/lars.png"></a>
-                    <div class="card-body"><a href="posts/lars-2.html">
-                            <h4 class="text-white">Lars 2D Vector - Make your own Linear Algebra Library</h4>
-                        </a>
-                        <p class="card-text">Make a custom 2D Vector strut
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col" data-bss-type="blog-loop-item" style="border-width: 5px;border-color: #212529fa;">
-                <div class="card" style="border-width: 2px;border-color: rgb(0,0,0);"><a style="background: #212529fa;border-color: #212529fa;" href="posts/lars-1.html"><img class="card-img-top" style="width: 25%;height: 25%;" src="assets/img/lars2.png"></a>
-                    <div class="card-body"><a href="posts/lars-1.html">
-                            <h4 class="text-white">Lars Intro - Make your own Linear Algebra Library</h4>
-                        </a>
-                        <p class="card-text">Make your own LA library
+    <h1 style="color: rgb(255,255,255);">Linear Algebra from Scratch, A Guided Series</h1>
+    <p style="color: rgb(255,255,255);">Welcome to the companion guides for the lars crate.<br><br>Alongside developing the crate itself, this series of articles is designed to help you build your own linear algebra functionality from the ground up. Each guide focuses on a small, well-defined task so you can learn and implement concepts step by step. The idea is to make the process approachable, modular, and transferable whether you want to follow the full series or just complete a few select parts.<br><br>.If you only need a 2D vector type, for example, you can complete the vector-related tasks and stop there. If you want to extend into 3D space or matrix transformations, you can build on top of what you’ve already written.<br><br>Each guide includes: - Mathematical background and conceptual explanations - Step-by-step implementation tasks - Full Rust code examples and solutions - Notes on extending or adapting the ideas further.<br><br>Although the examples are written in Rust, the core concepts can be adapted to any language with relative ease.</p>
+    <h1 style="color: rgb(255,255,255);"><strong>Guides</strong></h1>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <h4 style="color: rgb(255,255,255);">Heading</h4><span style="color: rgb(255,255,255);">This page.</span>
+        </li>
+        <li class="list-group-item">
+            <h4 style="color: rgb(255,255,255);">2. 2D Vector Guide</h4><span style="color: rgb(255,255,255);">Implement a simple two-dimensional vector type, including construction, arithmetic operations, scaling, dot products, and normalization.<br><a href="http://jayc.me/lars-site/vec2/"><span style="color: rgb(65, 131, 196);">Read it here: →</span></a></span>
+        </li>
+        <li class="list-group-item">
+            <h4 style="color: rgb(255,255,255);">3. 3D Vector Guide (coming soon)</h4><span style="color: rgb(255,255,255);">Extend your 2D implementation into 3D space, introducing concepts such as the cross product and vector magnitude.</span>
+        </li>
+        <li class="list-group-item">
+            <h4 style="color: rgb(255,255,255);">4. Matrix Guide (coming soon)</h4><span style="color: rgb(255,255,255);">Build a foundation for matrix operations, transformations, and composition.</span>
+        </li>
+        <li class="list-group-item">
+            <h4>5. Practical Applications (planned)</h4><span style="color: rgb(255,255,255);">Apply your implementations in areas like computer graphics, physics simulations, or data transformations.</span>
+        </li>
+    </ul>
+    <h1 style="color: rgb(255,255,255);"><br><strong>Modularity and Design Philosophy</strong></h1>
+    <p style="color: rgb(255,255,255);">Each guide is written to be self-contained. You can treat them as individual learning modules or as chapters in a longer course. The goal is to make each piece useful on its own while still contributing to a larger, cohesive system.<br><br>This approach mirrors how the lars crate itself is structured: small, reusable components that can stand alone or combine to form a complete linear algebra library.<br><br></p>
+    <h1 style="color: rgb(255,255,255);"><strong>Contributing and Next Steps</strong></h1>
+    <p style="color: rgb(255,255,255);">The guides are a work in progress and will continue to grow alongside the crate. Contributions, feedback, and suggestions are welcome.<br><br>You can find the project on GitHub here:<br><a href="https://github.com/JCooper-Bit/lars">https://github.com/JCooper-Bit/lars</a><br>&nbsp; <br><br>These guides are written to teach by doing. Work through them in order, or pick the pieces you need, and you’ll have a solid understanding of the principles behind linear algebra, and the tools to implement them yourself.</p>
+    <div data-bss-type="author-nav">
+        <div class="author-jayceews" data-bss-type="author-loop-item">
+            <div class="d-flex"><img class="img-fluid" width="240" height="160" src="../assets/img/Logo2.png">
+                <div class="ps-3">
+                    <h4><span style="color: rgb(255,255,255);">JayCee</span></h4>
+                    <p style="color: rgb(255,255,255);">J. Cooper (JayCee) is a software developer, Maths enthusiast and musician based in the UK. They are the creator and maintainer of the lars crate and they have various other projects in progress
 
-                        </p>
-                    </div>
+                        GitHub: @JCooper-Bit
+
+                        Project Repo: lars on GitHub</p>
                 </div>
             </div>
         </div>
@@ -449,8 +470,8 @@
             }
         })();
     </script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/bs-init.js"></script>
+    <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/js/bs-init.js"></script>
 </body>
 
 </html>

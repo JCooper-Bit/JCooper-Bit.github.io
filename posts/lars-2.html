@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en" style="--bs-primary: #A239CA;--bs-primary-rgb: 162,57,202;--bs-secondary: #4317F6;--bs-secondary-rgb: 67,23,246;--bs-body-color: rgb(255,255,255);--bs-body-bg: #0EB16;color: rgba(255,255,255,0);">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Lars 2D Vector - Make your own Linear Algebra Library</title>
+    <meta name="description" content="Make a custom 2D Vector strut
+">
+    <meta property="og:image" content="../assets/img/lars.png">
+    <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/bss-overrides.css">
+    <link rel="stylesheet" href="../assets/css/Navbar-Right-Links-Dark-icons.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md bg-dark bg-opacity-50 rounded-4 shadow-sm" style="background: rgba(255,255,255,0);--bs-body-bg: #;" data-bs-theme="dark">
+        <div class="container-fluid"><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/projects">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/articles">Articles</a></li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="/about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                </ul>
+                <p class="navbar-text"><br>&nbsp;</p>
+            </div>
+        </div>
+    </nav>
+    <div class="row">
+        <div class="col col-xl-12 offset-xl-0">
+            <div class="container py-4 hero1">
+                <h1 style="filter: grayscale(0%);--bs-body-color: rgb(255,255,255);"><strong><span style="text-decoration: underline;">LARS -&nbsp;Building a 2D Vector Type in Rust</span></strong></h1>
+                <p>&nbsp;</p>
+                <h4>Learning Goals</h4>
+                <p>By the end of this lesson, students will:</p>
+                <ul class="list-group">
+                    <li class="list-group-item whitespace"><span>Understand how 2D vectors are represented mathematically and in code.</span></li>
+                    <li class="list-group-item whitespace"><span style="color: rgb(255,255,255);">Implement a Vec2&nbsp;struct in Rust that supports basic vector operations.</span></li>
+                    <li class="list-group-item whitespace"><span>Learn about traits, operator overloading, and code organization in a math-focused crate.</span></li>
+                    <li class="list-group-item whitespace"><span>Write unit tests to validate mathematical correctness.</span></li>
+                </ul>
+                <p>&nbsp;</p>
+                <h2>Background: What is a Vector?</h2>
+                <p>As you hopefully know from school, a&nbsp;<strong>vector</strong>&nbsp;is a quantity that has both&nbsp;<strong>magnitude</strong>&nbsp;(length) and&nbsp;<strong>direction</strong>. If not, I will give you a whistlestop tour, or you can read an introductory article&nbsp;<a href="https://www.mathsisfun.com/algebra/vectors.html"><span style="background-color: initial;">here</span></a>.</p>
+                <p>In 2D space, we have multiple ways to notate vectors, the main one I will use is "Column Notation", which shows a vector as:</p><img src="../assets/img/vec2/Vector_definition.png">
+                <p>Another common way to represent vectors is using Unit Vectors and Components.</p>
+                <p>&nbsp;</p>
+                <h4>Unit Vectors</h4>
+                <p><strong>Unit</strong>&nbsp;vectors are vectors that has a magnitude of 1 in a specific direction. for example:</p><img class="img-fluid" width="63" height="48" src="../assets/img/vec2/hat_definition.png">
+                <p>Therefore, to express a vector with x-component 3 and y-component 4, with unit vectors, we can write:</p><img class="img-fluid" width="96" height="22" src="../assets/img/vec2/vector_with_unit_vectors.png">
+                <p>&nbsp;</p>
+                <h4>Magnitude</h4><img class="img-fluid" width="375" height="280" src="../assets/img/vectordecomp.webp">
+                <p><strong>Magnitude</strong>&nbsp;(or length) of a vector is the distance from the origin to the point defined by the vector. As you should see from the diagram above, it is calculated using the Pythagorean theorem:</p><img class="img-fluid" width="130" height="24" src="../assets/img/vec2/magnitude_definition.png">
+                <p>Where the notation for a vector V's magnitude is | V | .</p>
+                <p>&nbsp;</p>
+                <h4>Vector Addition and Subtraction</h4>
+                <p>Vectors can be added and subtracted component-wise. For example, given two vectors:</p><img class="img-fluid" width="72" height="48" src="../assets/img/vec2/vector_a_definition.png"><img class="img-fluid vecb" width="72" height="48" src="../assets/img/vec2/vector_b_definition.png">
+                <p><br>The addition and subtraction of these vectors is defined as:<br><br></p><img class="img-fluid" width="150" height="48" src="../assets/img/vec2/vector_addition.png"><img class="img-fluid vecsub" width="150" height="48" src="../assets/img/vec2/vector_subtraction.png">
+                <p>&nbsp;</p>
+                <h4><strong>Scalar Multiplication and Division</strong></h4>
+                <p>Vectors can be multiplied or divided by a scalar (a single number) by multiplying or dividing each component of the vector by that scalar. For example, given a vector:</p><img class="img-fluid" width="72" height="48" src="../assets/img/vec2/vector_a_definition.png">
+                <p>The scalar multiplication and division of this vector by a scalar k is defined as:</p><img class="img-fluid vec" width="134" height="48" src="../assets/img/vec2/scalar_multiplication.png"><img class="img-fluid vecsub" width="67" height="48" src="../assets/img/vec2/scalar_division.png">
+                <p>&nbsp; &nbsp;</p>
+                <h4><strong>The Dot Product</strong></h4>
+                <p>The dot product is a method for multiplying 2 vectors, it is notated mathematically as follows:</p><img class="img-fluid" width="37" height="14" src="../assets/img/vec2/adotb.png">
+                <p>There are 2 methods to calculate the dot product, this is the first:</p><img class="img-fluid" width="207" height="20" src="../assets/img/vec2/dot_product_1.png">
+                <p>&nbsp; &nbsp;</p><img class="img-fluid" width="208" height="20" src="../assets/img/vec2/dot_product_1_2.png">
+                <p>&nbsp; &nbsp;</p><img class="img-fluid" width="208" height="20" src="../assets/img/vec2/dot_product_1_3.png">
+                <p>&nbsp; &nbsp;</p>
+                <p>The second method:</p><img class="img-fluid" width="245" height="21" src="../assets/img/vec2/dot_product_2.png">
+                <p>&nbsp; &nbsp;<br>Vectors are foundational in: - Geometry (lines, points, and normals)<br>- Physics (velocity, force, acceleration and pretty much everything else!)<br>- Computer graphics (movement, transformations)<br>- Game development (positions, rotations, collision detection)<br><br>Let us now take our first step towards creating a 2D vector struct in Rust!</p>
+                <p>&nbsp; &nbsp;</p>
+                <h4><strong>Task 1:</strong>&nbsp; Defining a 2D Vector Type</h4>
+                <p>First off, we need to create a Rust struct called Vec2&nbsp;to represent a 2D vector.<br>&nbsp; &nbsp; -&nbsp; It should contain (x,y)&nbsp;variables<br>&nbsp; &nbsp; - You should&nbsp;<a href="https://doc.rust-lang.org/rust-by-example/trait/derive.html"><span style="background-color: initial;">Derive</span></a>&nbsp;common traits such as, Clone, Copy, Debug, PartialEq and Constructor<br>&nbsp; &nbsp; - Finally, you should define a few useful common constant vectors such as ZERO,&nbsp; ONE&nbsp;and&nbsp;<strong>unit</strong>&nbsp;vectors for the x and y directions.<br>This sets the foundation for all vector operations.</p>
+                <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapse-1" href="#collapse-1" role="button">Solution</a>
+                    <div class="collapse" id="collapse-1">
+                        <p></p><code><span style="color: inherit; background-color: initial;">#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, Constructor)]</span><br><span style="color: inherit; background-color: initial;">pub struct Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; pub x: f64,</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; pub y: f64,</span><br><span style="color: inherit; background-color: initial;">}</span><br><br><br><span style="color: inherit; background-color: initial;">impl Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; pub const ZERO: Vec2 = Vec2 { x: 0.0, y: 0.0 };</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; pub const ONE: Vec2 = Vec2 { x: 1.0, y: 1.0 };</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; pub const UNIT_X: Vec2 = Vec2 { x: 1.0, y: 0.0 };</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; pub const UNIT_Y: Vec2 = Vec2 { x: 0.0, y: 1.0 };</span><br><span style="color: inherit; background-color: initial;">}</span></code>
+                    </div>
+                </div>
+                <p>&nbsp;&nbsp;<br><br></p>
+                <h4><strong>Task 2:</strong>&nbsp;Computing Magnitude (Length)</h4>
+                <p>Using the Pythagorean theorem, implement a method on&nbsp;<span style="background-color: rgb(247, 247, 247);">Vec2</span>&nbsp;to compute the magnitude (length) of the vector.</p>
+                <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapse-9" href="#collapse-9" role="button">Solution</a>
+                    <div class="collapse" id="collapse-9">
+                        <p></p><code><span style="color: inherit; background-color: initial;">impl Vec2 {</span><br><span style="color: inherit; background-color: initial;"> pub fn mag(&amp;self) -&gt; f64 {</span><br><span style="color: inherit; background-color: initial;"> (self.x * self.x + self.y * self.y).sqrt()</span><br><span style="color: inherit; background-color: initial;"> }</span><br><span style="color: inherit; background-color: initial;">}</span></code>
+                    </div>
+                </div>
+                <p>&nbsp;&nbsp;<br><br></p>
+                <h4><strong>Task 3:</strong>&nbsp;Vector Arithmetic</h4>
+                <p><span style="background-color: rgba(255, 255, 255, 0);">Using rusts operator overloading capabilities, implement addition and subtraction for&nbsp;Vec2&nbsp;so that you can add and subtract vectors using the&nbsp;+&nbsp;and&nbsp;-&nbsp;operators.</span><br><span style="background-color: rgba(255, 255, 255, 0);">I would recommend using the&nbsp;</span><a href="https://crates.io/crates/derive_more"><span style="background-color: rgba(255, 255, 255, 0);">derive_more</span></a><span style="background-color: rgba(255, 255, 255, 0);">&nbsp;crate to make this easier.</span></p>
+                <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapse-8" href="#collapse-8" role="button">Solution</a>
+                    <div class="collapse" id="collapse-8">
+                        <p></p><code><span style="color: inherit; background-color: initial;">// Using Derive more for operator overloading</span><br><br><span style="color: inherit; background-color: initial;">use derive_more::{Add, Sub};</span><br><br><span style="color: inherit; background-color: initial;">#[derive(Add, Sub, Div, Mul, Neg, Clone, Copy, Debug, PartialEq, PartialOrd, Constructor)] // The same as Task 1 but withAdd and Sub traits</span><br><span style="color: inherit; background-color: initial;">pub struct Vec2 {</span><br><span style="color: inherit; background-color: initial;"> pub x: f64,</span><br><span style="color: inherit; background-color: initial;"> pub y: f64,</span><br><span style="color: inherit; background-color: initial;">}</span><br><br><span style="color: inherit; background-color: initial;">// Manually implementing traits if not using derive_more</span><br><br><span style="color: inherit; background-color: initial;">impl std::ops::Add for Vec2 {</span><br><span style="color: inherit; background-color: initial;"> type Output = Vec2;</span><br><span style="color: inherit; background-color: initial;"> fn add(self, other: Vec2) -&gt; Vec2 {</span><br><span style="color: inherit; background-color: initial;"> Vec2 {</span><br><span style="color: inherit; background-color: initial;"> x: self.x + other.x,</span><br><span style="color: inherit; background-color: initial;"> y: self.y + other.y,</span><br><span style="color: inherit; background-color: initial;"> }</span><br><span style="color: inherit; background-color: initial;"> }</span><br><span style="color: inherit; background-color: initial;">}</span><br><span style="color: inherit; background-color: initial;">impl std::ops::Sub for Vec2 {</span><br><span style="color: inherit; background-color: initial;"> type Output = Vec2;</span><br><span style="color: inherit; background-color: initial;"> fn sub(self, other: Vec2) -&gt; Vec2 {</span><br><span style="color: inherit; background-color: initial;"> Vec2 {</span><br><span style="color: inherit; background-color: initial;"> x: self.x - other.x,</span><br><span style="color: inherit; background-color: initial;"> y: self.y - other.y,</span><br><span style="color: inherit; background-color: initial;"> }</span><br><span style="color: inherit; background-color: initial;"> }</span><br><span style="color: inherit; background-color: initial;">}</span></code>
+                    </div>
+                </div>
+                <p>&nbsp;&nbsp;<br><br></p>
+                <h4><strong>Task 4:</strong>&nbsp; The Dot Product</h4>
+                <p>Implement a method on&nbsp;Vec2&nbsp;to compute the dot product between two vectors as we defined earlier. I recommend implementing this as a method called&nbsp;dot&nbsp;that takes &amp;self and another&nbsp;Vec2&nbsp;as an argument and returns a&nbsp;f64.</p>
+                <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapse-7" href="#collapse-7" role="button">Solution</a>
+                    <div class="collapse" id="collapse-7">
+                        <p></p><code><span style="color: inherit; background-color: initial;">pub fn dot(&amp;self, other: &amp;Vec2) -&gt; f64 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; (self.x * other.x) + (self.y * other.y) // Method Two</span><br><span style="color: inherit; background-color: initial;"> }</span></code>
+                    </div>
+                </div>
+                <p>&nbsp;&nbsp;<br><br></p>
+                <h4><strong><span style="color: rgb(51, 51, 51);">Task 5:</span></strong>&nbsp; Component Mapping</h4>
+                <p>Implement a method on&nbsp;Vec2&nbsp;called&nbsp;map&nbsp;that takes a closure as an argument. This closure should take a single&nbsp;f64&nbsp;and return a&nbsp;f64. The&nbsp;map&nbsp;method should apply this closure to both the x and y components of the vector and return a new&nbsp;Vec2&nbsp;with the results.<br><br>Mathematically speaking, we are applying a function "f" to each component of the vector.</p>
+                <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-6" href="#collapse-6" role="button">Solution</a>
+                    <div class="collapse show" id="collapse-6">
+                        <p></p><code><span style="color: inherit; background-color: initial;">pub fn map&lt;F&gt;(&amp;self, f: F) -&gt; Vec2</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp;where</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp;F: Fn(f64) -&gt; f64,</span><br><span style="color: inherit; background-color: initial;"> {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; let fx = f(self.x);</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; let fy = f(self.y);</span><br><span style="color: inherit; background-color: initial;"> Vec2 { x: fx, y: fy }</span><br><span style="color: inherit; background-color: initial;"> }</span></code>
+                    </div>
+                </div>
+                <p>&nbsp;&nbsp;<br><br></p>
+                <h4><strong>Task 6:</strong>&nbsp; Normalising a Vector</h4>
+                <p>Normalizing a vector means scaling it to have a magnitude of 1 while maintaining its direction. Implement a method on&nbsp;Vec2&nbsp;called&nbsp;normalize&nbsp;that returns a new&nbsp;Vec2&nbsp;that is the normalized version of the original vector.<br><br>The map function from Task 5 may be useful here.</p>
+                <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-5" href="#collapse-5" role="button">Solution</a>
+                    <div class="collapse show" id="collapse-5">
+                        <p></p><code><span style="color: inherit; background-color: initial;">pub fn normalize(&amp;self) -&gt; Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; let m = self.mag();</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; if m == 0.0 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; &nbsp; &nbsp; return Vec2::ZERO; // or handle zero-length vector case as needed</span><br><span style="color: inherit; background-color: initial;"> }</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; self.map(|i| i / m)</span><br><span style="color: inherit; background-color: initial;">}</span></code>
+                    </div>
+                </div>
+                <p>&nbsp;&nbsp;<br><br></p>
+                <h4><strong>Task 7:</strong>&nbsp; Scalar Multiplication and Division</h4>
+                <p>Implement scalar multiplication and division for&nbsp;Vec2&nbsp;so that you can multiply and divide a vector by a scalar using the&nbsp;*&nbsp;and&nbsp;/&nbsp;operators. <br><br>You can use the&nbsp;<a href="https://crates.io/crates/derive_more">derive_more</a>&nbsp;crate again to make this easier.</p>
+                <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-4" href="#collapse-4" role="button">Solution</a>
+                    <div class="collapse show" id="collapse-4">
+                        <p></p><code><span style="color: inherit; background-color: initial;">// With derive_more</span><br><span style="color: inherit; background-color: initial;">use derive_more::{Mul, Div, Add, Sub};</span><br><br><span style="color: inherit; background-color: initial;">#[derive(Add, Sub, Div, Mul, Clone, Copy, Debug, PartialEq, PartialOrd, Constructor)]</span><br><span style="color: inherit; background-color: initial;">pub struct Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; pub x: f64,</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; pub y: f64</span><br><span style="color: inherit; background-color: initial;">}</span><br><br><span style="color: inherit; background-color: initial;">// Without derive_more</span><br><br><span style="color: inherit; background-color: initial;">impl std::ops::Mul&lt;f64&gt; for Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; type Output = Vec2;</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; fn mul(self, scalar: f64) -&gt; Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; &nbsp; &nbsp; Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; x: self.x * scalar,</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; y: self.y * scalar,</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; &nbsp; &nbsp; }</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; }</span><br><span style="color: inherit; background-color: initial;">}</span><br><span style="color: inherit; background-color: initial;">impl std::ops::Div&lt;f64&gt; for Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; type Output = Vec2;</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; fn div(self, scalar: f64) -&gt; Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; &nbsp; &nbsp; Vec2 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; x: self.x / scalar,</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; y: self.y / scalar,</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; &nbsp; &nbsp; }</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; }</span><br><span style="color: inherit; background-color: initial;">}</span></code>
+                    </div>
+                </div>
+                <p>&nbsp;&nbsp;<br><br></p>
+                <h4><strong>Task 8:</strong>&nbsp; Using Vec2 as a point</h4>
+                <p>In many applications, 2D vectors are used to represent points in space. <br>We should implement a method on&nbsp;Vec2&nbsp;called&nbsp;dist&nbsp;that takes another&nbsp;Vec2&nbsp;as an argument and returns the distance between the two points represented by the vectors.<br>Perhaps we could also add an alias type of Vec2 called&nbsp;Point2, just&nbsp;to make the intent clearer when it is being used as a point</p>
+                <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-3" href="#collapse-3" role="button">Solution</a>
+                    <div class="collapse show" id="collapse-3">
+                        <p></p><code><span style="color: inherit; background-color: initial;">pub fn dist(&amp;self, other: &amp;Point2D) -&gt; f64 {</span><br><span style="color: inherit; background-color: initial;">&nbsp; &nbsp; (*self - *other).mag().abs()</span><br><span style="color: inherit; background-color: initial;"> }</span><br>...<br><br><span style="color: inherit; background-color: initial;">pub type Point2D = Vec2;</span></code>
+                    </div>
+                </div>
+                <p>&nbsp;&nbsp;<br><br></p>
+                <h4><strong>Task 9:</strong>&nbsp; Testing and Validation</h4>
+                <p>Write&nbsp;<a href="https://doc.rust-lang.org/rust-by-example/testing/unit_testing.html">unit tests</a>&nbsp;for all the methods and operator overloads you have implemented for&nbsp;Vec2. Ensure that your tests cover various cases, including edge cases like zero-length vectors.</p>
+                <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapse-2" href="#collapse-2" role="button">Solution</a>
+                    <div class="collapse" id="collapse-2">
+                        <p></p><code><span style="color: inherit; background-color: initial;">#[cfg(test)]</span><br><span style="color: inherit; background-color: initial;">mod tests {</span><br><span style="color: inherit; background-color: initial;"> use super::*;</span><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_add() {</span><br><span style="color: inherit; background-color: initial;"> let v1 = Vec2::ZERO;</span><br><span style="color: inherit; background-color: initial;"> let v2 = Vec2::ONE;</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(v1 + v2, Vec2::ONE);</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_sub() {</span><br><span style="color: inherit; background-color: initial;"> let v1 = Vec2::new(5.0, 7.0);</span><br><span style="color: inherit; background-color: initial;"> let v2 = Vec2::new(2.0, 3.0);</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(v1 - v2, Vec2::new(3.0, 4.0));</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_mag() {</span><br><span style="color: inherit; background-color: initial;"> let v = Vec2::new(3.0, 4.0);</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(v.mag(), 5.0);</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_dot() {</span><br><span style="color: inherit; background-color: initial;"> let a = Vec2::new(1.0, 2.0);</span><br><span style="color: inherit; background-color: initial;"> let b = Vec2::new(3.0, 4.0);</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(a.dot(&amp;b), 11.0);</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_map() {</span><br><span style="color: inherit; background-color: initial;"> let v = Vec2::new(1.0, 2.0);</span><br><span style="color: inherit; background-color: initial;"> let mapped = v.map(|x| x * 2.0);</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(mapped, Vec2::new(2.0, 4.0));</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_normalize() {</span><br><span style="color: inherit; background-color: initial;"> let v = Vec2::new(3.0, 4.0);</span><br><span style="color: inherit; background-color: initial;"> let n = v.normalize();</span><br><span style="color: inherit; background-color: initial;"> assert!((n.mag() - 1.0).abs() &lt; 1e-10);</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_scalar_mul() {</span><br><span style="color: inherit; background-color: initial;"> let v = Vec2::new(1.0, 2.0);</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(2.0 * v, Vec2::new(2.0, 4.0));</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_scalar_div() {</span><br><span style="color: inherit; background-color: initial;"> let v = Vec2::new(2.0, 4.0);</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(v / 2.0, Vec2::new(1.0, 2.0));</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_dist() {</span><br><span style="color: inherit; background-color: initial;"> let a = Point2D::new(1.0, 2.0);</span><br><span style="color: inherit; background-color: initial;"> let b = Point2D::new(1.0, 0.0);</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(a.dist(&amp;b), 2.0);</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_zero_length_normalize() {</span><br><span style="color: inherit; background-color: initial;"> let v = Vec2::ZERO;</span><br><span style="color: inherit; background-color: initial;"> let n = v.normalize();</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(n, Vec2::ZERO); // or however you choose to handle this case</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;"> #[test]</span><br><span style="color: inherit; background-color: initial;"> fn test_dot_perpendicular() {</span><br><span style="color: inherit; background-color: initial;"> let a = Vec2::UNIT_X;</span><br><span style="color: inherit; background-color: initial;"> let b = Vec2::UNIT_Y;</span><br><span style="color: inherit; background-color: initial;"> assert_eq!(a.dot(&amp;b), 0.0);</span><br><span style="color: inherit; background-color: initial;"> }</span><br><br><span style="color: inherit; background-color: initial;">// You can add more tests as needed, such as ones for commutativity, associativity, etc.</span><br><span style="color: inherit; background-color: initial;">}</span></code>
+                    </div>
+                </div>
+                <p>&nbsp;&nbsp;<br><br></p>
+                <h4><strong>Conclusion and Next Steps</strong></h4>
+                <p>Congratulations! You have successfully implemented a basic 2D vector type in Rust with essential operations and tests. <br>This&nbsp;Vec2&nbsp;struct can now serve as a foundation for more complex mathematical operations and applications in graphics, physics, and game development.<br><br>As next steps, consider exploring:<br>&nbsp;- Implementing additional vector operations such as the 2D cross product, angle between vectors, and projection.<br>- Extending the&nbsp;Vec2&nbsp;struct to support more advanced features like interpolation (lerp)<br><br>In the next part of this series, we will build upon this foundation to create a 3D vector type, improve our 2D vector slightly and explore more complex mathematical concepts.<br><br>The code and ideas for this series is based on my&nbsp;<strong>lars</strong>&nbsp;maths crate, which you can find on&nbsp;<a href="https://github.com/JCooper-Bit/lars">GitHub</a></p>
+                <div data-bss-type="author-nav">
+                    <div class="author-jayceews" data-bss-type="author-loop-item">
+                        <div class="d-flex"><img class="img-fluid" width="240" height="160" src="../assets/img/Logo2.png">
+                            <div class="ps-3">
+                                <h4><span>JayCee</span></h4>
+                                <p>J. Cooper (JayCee) is a software developer, Maths enthusiast and musician based in the UK. They are the creator and maintainer of the lars crate and they have various other projects in progress
+
+                                    GitHub: @JCooper-Bit
+
+                                    Project Repo: lars on GitHub</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            let collections = document.querySelectorAll('[data-bss-type="blog-loop"]');
+            let tagNavs = document.querySelectorAll('[data-bss-type="tag-nav"]');
+            let tagLoops = document.querySelectorAll('[data-bss-type="tag-loop"]');
+            let authorLoops = document.querySelectorAll('[data-bss-type="author-loop"]');
+            let authorNavs = document.querySelectorAll('[data-bss-type="author-nav"]');
+
+            window.addEventListener("popstate", (e) => {
+                for (let collection of collections) {
+                    updateCollection(collection);
+                }
+
+                for (let tagNav of tagNavs) {
+                    updateTagNav(tagNav);
+                }
+
+                for (let authorNav of authorNavs) {
+                    updateAuthorNav(authorNav);
+                }
+            });
+
+            for (let collection of collections) {
+
+                updateCollection(collection);
+
+                if (!canPaginateCollection(collection)) continue;
+
+                let pagination = collection.querySelector('[data-bss-type="blog-loop-pagination"]');
+
+                pagination.addEventListener('click', function(e) {
+                    let paginationItem = e.target.closest('.page-item');
+                    if (!paginationItem) return;
+
+                    e.preventDefault();
+
+                    if (paginationItem.classList.contains('disabled') || paginationItem.classList.contains('active')) return;
+
+                    let collection = paginationItem.closest('[data-bss-type="blog-loop"]');
+                    if (!collection) return;
+
+                    let page = parseInt(paginationItem.dataset.page);
+                    if (!page) return;
+
+                    let pageParam = getPageParameter(collection);
+
+                    if (pageParam) {
+                        const url = new URL(window.location);
+                        url.searchParams.set(pageParam, page);
+                        history.pushState({
+                            [pageParam]: page
+                        }, document.title, url);
+
+                        for (let c of collections) {
+                            let param = getPageParameter(c);
+                            if (param !== pageParam) continue;
+                            updateCollection(c);
+                        }
+                    } else {
+                        updateCollection(collection, page);
+                    }
+                });
+            }
+
+            for (let tagNav of tagNavs) {
+                updateTagNav(tagNav);
+                tagNav.addEventListener('click', onTagClick);
+            }
+
+            for (let tagLoop of tagLoops) {
+                tagLoop.addEventListener('click', onTagClick);
+            }
+
+            for (let authorLoop of authorLoops) {
+                authorLoop.addEventListener('click', onAuthorClick);
+            }
+
+            for (let authorNav of authorNavs) {
+                updateAuthorNav(authorNav);
+            }
+
+            function onTagClick(e) {
+                onBlogFilterClick(e);
+
+                for (let nav of tagNavs) {
+                    updateTagNav(nav);
+                }
+            }
+
+            function onAuthorClick(e) {
+                onBlogFilterClick(e);
+
+                for (let authorNav of authorNavs) {
+                    updateAuthorNav(authorNav);
+                }
+            }
+
+            function onBlogFilterClick(e) {
+                const item = e.target.closest('[data-bss-filter="blog"]');
+                if (!item || !item.dataset.hasOwnProperty('bssHref') || !item.dataset.hasOwnProperty('bssFilterParam')) return;
+
+                const stateNode = item.dataset.hasOwnProperty('bssStateNode') ? item : item.querySelector('[data-bss-state-node]');
+
+                if (stateNode && (stateNode.classList.contains('disabled') || stateNode.classList.contains('active'))) {
+                    e.preventDefault();
+                    return;
+                }
+
+                const link = item.dataset.bssHref;
+                if (!linksToCurrentPage(link)) return;
+
+                e.preventDefault();
+
+                const url = new URL(window.location);
+                const filterParam = item.dataset.bssFilterParam;
+                const filterValue = item.dataset.bssFilterValue || '';
+
+                const collectionsToUpdate = [];
+                const newQueryParams = {
+                    [filterParam]: filterValue
+                };
+
+                for (let c of collections) {
+                    if (!canFilterCollection(c)) continue;
+                    collectionsToUpdate.push(c);
+
+                    let pageParam = getPageParameter(c);
+                    let page = url.searchParams.get(pageParam);
+                    if (page === null || page == 1) continue;
+
+                    newQueryParams[pageParam] = 1;
+                }
+
+                for (let param in newQueryParams) {
+                    if (newQueryParams[param]) {
+                        url.searchParams.set(param, newQueryParams[param]);
+                    } else {
+                        url.searchParams.delete(param);
+                    }
+                }
+
+                history.pushState(newQueryParams, document.title, url);
+
+                for (let c of collectionsToUpdate) {
+                    updateCollection(c);
+                }
+            }
+
+            function getCollectionFilters(collection) {
+                let filters = [];
+
+                try {
+                    const parsed = JSON.parse(collection.dataset.bssFilters);
+
+                    if (Array.isArray(parsed)) {
+                        filters = parsed;
+                    }
+                } catch (e) {}
+
+                return filters;
+            }
+
+            function getCollectionEmptyFilterAction(collection, filter = '') {
+                let emptyFilterActions = [];
+
+                try {
+                    const parsed = JSON.parse(collection.dataset.bssEmptyFilterActions);
+
+                    if (Array.isArray(parsed)) {
+                        emptyFilterActions = parsed;
+                    }
+                } catch (e) {}
+
+                const action = emptyFilterActions.find(action => action.filter === filter);
+
+                return action ? action.value : '';
+            }
+
+            function canFilterCollection(collection) {
+                return !!getCollectionFilters(collection).length;
+            }
+
+            function canFilterCollectionByTag(collection) {
+                return getCollectionFilters(collection).includes('tag');
+            }
+
+            function canFilterCollectionByAuthor(collection) {
+                return getCollectionFilters(collection).includes('author');
+            }
+
+            function shouldShowAllItemsForEmptyFilter(collection, filter = '') {
+                return getCollectionEmptyFilterAction(collection, filter) === 'show-all';
+            }
+
+            function canPaginateCollection(collection) {
+                return !!getCollectionPagination(collection);
+            }
+
+            function getCollectionPagination(collection) {
+                return collection.querySelector('[data-bss-type="blog-loop-pagination"]');
+            }
+
+            function getPageParameter(collection) {
+                return collection.dataset.bssPageParam;
+            }
+
+            function linksToCurrentPage(path = '') {
+                let currentURL, url;
+
+                try {
+                    currentURL = new URL(window.location);
+                    url = new URL(path, window.location.href);
+                } catch (e) {
+                    console.error(e);
+                }
+
+                return currentURL.origin === url.origin && currentURL.pathname === url.pathname;
+            }
+
+            function updateCollection(collection, page, activeTag = '', activeAuthor = '') {
+
+                const url = new URL(window.location.href);
+
+                if (canPaginateCollection(collection)) {
+                    if (!page) {
+                        let pageParam = getPageParameter(collection);
+                        page = (pageParam ? url.searchParams.get(pageParam) : 1) || 1;
+                    }
+                }
+
+                if (canFilterCollectionByTag(collection) && !activeTag) {
+                    let tagParam = 'tag';
+                    activeTag = url.searchParams.get(tagParam) || '';
+                }
+
+                if (canFilterCollectionByAuthor(collection) && !activeAuthor) {
+                    let authorParam = 'author';
+                    activeAuthor = url.searchParams.get(authorParam) || '';
+                }
+
+                renderCollectionPage(collection, page, activeTag, activeAuthor);
+            }
+
+            function renderCollectionPage(collection, page = 1, activeTag = '', activeAuthor = '') {
+
+                page = Math.max(parseInt(page, 10), 1);
+
+                collection.style.removeProperty('display');
+
+                let loopBase = collection.querySelector('[data-bss-type="blog-loop-base"]');
+                loopBase && loopBase.style.removeProperty('display');
+
+                let emptyState = collection.querySelector('[data-bss-type="empty-state"]');
+                emptyState && emptyState.style.setProperty('display', 'none', 'important');
+
+                let listItems = [].slice.call(collection.querySelectorAll('[data-bss-type="blog-loop-item"]'));
+                listItems.forEach(item => item.style.setProperty('display', 'none', 'important'));
+
+                if (canFilterCollectionByTag(collection)) {
+                    listItems = listItems.filter(item => activeTag ? item.classList.contains('post-tag-' + activeTag) : shouldShowAllItemsForEmptyFilter(collection, 'tag'));
+                }
+
+                if (canFilterCollectionByAuthor(collection)) {
+                    listItems = listItems.filter(item => activeAuthor ? item.classList.contains('post-author-' + activeAuthor) : shouldShowAllItemsForEmptyFilter(collection, 'author'));
+                }
+
+                let perPage = collection.dataset.bssPerpage || listItems.length;
+                let visibleListItems = listItems.slice((page - 1) * perPage, page * perPage);
+                visibleListItems.forEach(item => item.style.removeProperty('display'));
+
+                let isEmpty = !visibleListItems.length;
+
+                if (isEmpty) {
+                    loopBase && loopBase.style.setProperty('display', 'none', 'important');
+                    emptyState && emptyState.style.removeProperty('display');
+                }
+
+                let itemCount = listItems.length;
+                let pageCount = Math.max(Math.ceil(itemCount / perPage), 1);
+
+                updateCollectionPagination(collection, page, pageCount, isEmpty);
+
+                if (collection.dataset.bssScrollOnChange) {
+                    scrollToCollectionTop(collection);
+                }
+            }
+
+            function updateCollectionPagination(collection, page, pageCount, isEmpty) {
+                let pagination = getCollectionPagination(collection);
+                if (!pagination) return;
+
+                let paginationItems = [].slice.call(pagination.querySelectorAll('.page-item'));
+
+                if (pageCount === 1 || isEmpty) {
+                    pagination.style.setProperty('display', 'none', 'important');
+                } else {
+                    pagination.style.removeProperty('display');
+                }
+
+                let previousBtnDisabled = page - 1 <= 0;
+                let previousPage = previousBtnDisabled ? 1 : page - 1;
+
+                let nextBtnDisabled = page + 1 > pageCount;
+                let nextPage = nextBtnDisabled ? pageCount : page + 1;
+
+                for (let i = 0; i < paginationItems.length; i++) {
+                    let paginationItem = paginationItems[i];
+
+                    paginationItem.classList.remove('active', 'disabled');
+
+                    if (paginationItem.dataset.type === 'prev') {
+                        paginationItem.dataset.page = previousPage;
+
+                        if (previousBtnDisabled) {
+                            paginationItem.classList.add('disabled');
+                        }
+                    } else if (paginationItem.dataset.type === 'next') {
+                        paginationItem.dataset.page = nextPage;
+
+                        if (nextBtnDisabled) {
+                            paginationItem.classList.add('disabled');
+                        }
+                    } else {
+                        if (paginationItem.dataset.page > pageCount) {
+                            paginationItem.style.setProperty('display', 'none', 'important');
+                        } else {
+                            paginationItem.style.removeProperty('display');
+                        }
+
+                        if (paginationItem.dataset.page == page) {
+                            paginationItem.classList.add('active');
+                        }
+                    }
+                }
+            }
+
+            function scrollToCollectionTop(collection) {
+                const rect = collection.getBoundingClientRect();
+                const viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
+                const threshold = 100;
+
+                if (rect.top >= 0 && viewHeight - rect.top > threshold) return;
+
+                setTimeout(() => {
+                    collection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                        inline: "start"
+                    });
+                }, 0);
+            }
+
+            function updateTagNav(tagNav) {
+                const url = new URL(window.location.href);
+
+                let tagParam = 'tag';
+                let tag = url.searchParams.get(tagParam) || '';
+
+                renderTagNav(tagNav, tag);
+            }
+
+            function renderTagNav(tagNav, activeTag = '') {
+                if (!tagNav.dataset.bssSyncUrl) return;
+
+                let navItems = [].slice.call(tagNav.querySelectorAll('[data-bss-type="tag-loop-item"]'));
+
+                navItems.forEach(item => {
+                    const activeClassNode = item.dataset.hasOwnProperty('bssStateNode') ? item : item.querySelector('[data-bss-state-node]');
+                    if (!activeClassNode) return;
+
+                    activeClassNode.classList.remove('active');
+
+                    const link = item.dataset.bssHref;
+                    if (!linksToCurrentPage(link) || activeClassNode.classList.contains('disabled')) return;
+
+                    if (item.dataset.bssTag === activeTag) {
+                        activeClassNode.classList.add('active');
+                    }
+                });
+            }
+
+            function updateAuthorNav(authorNav) {
+                const url = new URL(window.location.href);
+
+                let authorParam = 'author';
+                let author = url.searchParams.get(authorParam) || '';
+
+                renderAuthorNav(authorNav, author);
+            }
+
+            function renderAuthorNav(authorNav, activeAuthor = '') {
+                if (!canFilterCollectionByAuthor(authorNav)) return;
+
+                authorNav.style.removeProperty('display');
+
+                let items = [].slice.call(authorNav.querySelectorAll('[data-bss-type="author-loop-item"]'));
+                items.forEach(item => item.classList.contains('author-' + activeAuthor) ? item.style.removeProperty('display') : item.style.setProperty('display', 'none', 'important'));
+            }
+        })();
+    </script>
+    <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/js/bs-init.js"></script>
+</body>
+
+</html>
